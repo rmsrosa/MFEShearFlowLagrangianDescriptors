@@ -33,7 +33,7 @@ function cached(f, name)
     return A
 end
 
-"Save a figure under `docs/src/assets` (and return it, so Literate displays it)."
+"Save a figure under `docs/src/assets`; the scripts then show it as a Markdown image."
 function savefig(name, fig)
     mkpath(ASSETS)
     save(joinpath(ASSETS, name), fig; px_per_unit = 2)

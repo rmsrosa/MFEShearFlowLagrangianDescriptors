@@ -28,7 +28,9 @@ end
 ax = Axis(fig[5, 2]; ylabel = "E", xlabel = "t", yscale = log10)
 lines!(ax, sol.t, max.(fluctuation_energy.(sol.u), 1e-12); color = :black, linewidth = 0.8)
 Label(fig[0, :], "MFU, Re = 400: amplitudes and fluctuation energy (1 - a₁)² + Σⱼ≥₂ aⱼ²")
-savefig("timeseries_mfu_re400.png", fig)
+savefig("timeseries_mfu_re400.png", fig); nothing #hide
+
+# ![](../assets/timeseries_mfu_re400.png)
 
 # The lifetime of this transient, with our laminarisation criterion (fluctuation energy
 # below ``10^{-2}``; the papers do not state theirs):
@@ -65,7 +67,9 @@ for (k, (L, Em1, title, tmax)) in enumerate(((L_mfu, Em1_mfu, "Lx = 1.75π, Lz =
     hm = heatmap!(ax, Res_map, Em1, L'; colormap = :jet, colorrange = (0, tmax))
     Colorbar(fig[1, 2k], hm; label = "lifetime")
 end
-savefig("lifetime_maps.png", fig)
+savefig("lifetime_maps.png", fig); nothing #hide
+
+# ![](../assets/lifetime_maps.png)
 
 # At low ``Re`` the lifetime varies smoothly with the initial amplitude; as ``Re`` grows,
 # tongues of long lifetimes appear and interleave, giving the fractal-looking structure
@@ -109,7 +113,9 @@ for (k, (T, title)) in enumerate(((T_mfu, "Lx = 1.75π, Lz = 1.2π (cf. NJP Fig.
     end
     k == 2 && axislegend(ax; position = :rt)
 end
-savefig("survival.png", fig)
+savefig("survival.png", fig); nothing #hide
+
+# ![](../assets/survival.png)
 
 # The distributions are exponential (straight lines) after a short initial transient.
 # In the minimal flow unit, for ``Re \gtrsim 350`` a finite fraction of trajectories never

@@ -98,7 +98,9 @@ ax = Axis(fig[1, 1]; xscale = log10, yscale = log10, xlabel = "Re",
 lines!(ax, Res, -growth(NBC_DOMAIN); label = "Lx = 4π, Lz = 2π")
 lines!(ax, Res, -growth(MFU_DOMAIN); label = "Lx = 1.75π, Lz = 1.2π", linestyle = :dash)
 axislegend(ax)
-savefig("laminar_stability.png", fig)
+savefig("laminar_stability.png", fig); nothing #hide
+
+# ![](../assets/laminar_stability.png)
 
 # The least stable eigenvalue is exactly ``-\beta^2/Re`` (the decay of ``a_1``), so the
 # laminar state is only weakly stable at large ``Re`` but never unstable. The Jacobian is,

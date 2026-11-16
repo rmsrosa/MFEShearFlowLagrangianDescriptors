@@ -163,7 +163,9 @@ plot_bifurcations!(ax1, eq_nbc, po_nbc, sp_nbc)
 ax2 = Axis(fig[1, 2]; xlabel = "Re", ylabel = "fluctuation energy E", title = "Lx = 1.75π, Lz = 1.2π")
 plot_bifurcations!(ax2, eq_mfu, po_mfu, sp_mfu)
 Legend(fig[1, 3], ax1; framevisible = false)
-savefig("bifurcation_diagram.png", fig)
+savefig("bifurcation_diagram.png", fig); nothing #hide
+
+# ![](../assets/bifurcation_diagram.png)
 
 # All equilibria born at the saddle-node are unstable (the upper branch has 3, the lower
 # 4 unstable directions at ``Re = 400`` for ``L_x = 4\pi``), as in SIADS. The energy is the
@@ -227,7 +229,9 @@ ax2 = Axis(fig[2, 1]; xlabel = "Re", ylabel = "largest Lyapunov exponent")
 scatterlines!(ax2, lyap[:, 1], lyap[:, 2]; markersize = 5)
 hlines!(ax2, [0.0]; color = :gray)
 linkxaxes!(ax, ax2)
-savefig("mfu_attractors.png", fig)
+savefig("mfu_attractors.png", fig); nothing #hide
+
+# ![](../assets/mfu_attractors.png)
 
 # Lowest ``Re`` at which the followed attractor survives, and the range of ``Re`` with a
 # positive Lyapunov exponent (above an estimated statistical error of ``2\times10^{-4}``):
@@ -287,7 +291,9 @@ for Re in Re_edge
     X = edges[Re][50:end, :]
     lines!(ax2, X[:, 7], X[:, 8]; label = "Re = $(Int(Re))")
 end
-savefig("edge_states.png", fig)
+savefig("edge_states.png", fig); nothing #hide
+
+# ![](../assets/edge_states.png)
 
 # Summary of the edge trajectories (after discarding the first 250 time units): mean and
 # range of the fluctuation energy and the dominant modes.

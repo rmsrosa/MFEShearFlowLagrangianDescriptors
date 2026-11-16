@@ -155,7 +155,9 @@ for (c, s) in enumerate(slices_edge)
     scatter!(ax, [s.base[s.i]], [s.base[s.j]]; color = :cyan, marker = :xcross, markersize = 14)
 end
 Label(fig[0, :], "Arclength descriptors on slices through the edge state, Lx = 4π, Lz = 2π, Re = 320"; fontsize = 18)
-savefig("ld_edge_re320.png", fig)
+savefig("ld_edge_re320.png", fig); nothing #hide
+
+# ![](../assets/ld_edge_re320.png)
 
 # What the maps show:
 #
@@ -184,7 +186,9 @@ for (c, Re) in enumerate(Res_scan)
     F, _ = ld(s; τ = 150.0)
     panel!(fig[1, c], s, F; title = "Re = $(Int(Re))")
 end
-savefig("ld_edge_re_scan.png", fig)
+savefig("ld_edge_re_scan.png", fig); nothing #hide
+
+# ![](../assets/ld_edge_re_scan.png)
 
 # On this slice the laminar band through the edge state, with the edge state on its
 # boundary, is present at all four Reynolds numbers, on both sides of the saddle-node: the
@@ -204,7 +208,9 @@ Fp, Bp = ld(s; τ = 150.0, M = pnorm_half, mname = "p05")
 fig = Figure(size = (1000, 500))
 panel!(fig[1, 1], s, Fp; title = "p-norm (p = 1/2), forward, τ = 150")
 panel!(fig[1, 2], s, Bp; title = "p-norm (p = 1/2), backward, τ = 150")
-savefig("ld_pnorm_re320.png", fig)
+savefig("ld_pnorm_re320.png", fig); nothing #hide
+
+# ![](../assets/ld_pnorm_re320.png)
 
 # ## Slices through the equilibria
 #
@@ -230,7 +236,9 @@ panel!(fig[1, 2], s_eq, Be; title = "a4/a5: backward, τ = 100", basin_overlay =
 panel!(fig[2, 1], s_eq2, Fe2; title = "a1/a2: forward, τ = 100", basin_overlay = false, points = eqs310)
 panel!(fig[2, 2], s_eq2, Be2; title = "a1/a2: backward, τ = 100", basin_overlay = false, points = eqs310)
 Label(fig[0, :], "Slices through an equilibrium at Re = 310, Lx = 4π, Lz = 2π"; fontsize = 18)
-savefig("ld_equilibria_re310.png", fig)
+savefig("ld_equilibria_re310.png", fig); nothing #hide
+
+# ![](../assets/ld_equilibria_re310.png)
 
 # Around the equilibrium both descriptors are small in a blob of slow motion, with
 # filaments spiralling into it (the equilibrium has complex unstable eigenvalues). A clean
