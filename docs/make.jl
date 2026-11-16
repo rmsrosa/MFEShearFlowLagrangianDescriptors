@@ -1,5 +1,6 @@
 # Build the documentation: `julia --project=. -t 4 docs/make.jl` from the repository root.
-# On GitHub Actions (`.github/workflows/docs.yml`) the site is also deployed to gh-pages.
+# On GitHub Actions (the `docs` job of `.github/workflows/CI.yml`) the site is also
+# deployed to gh-pages.
 #
 # Each script in `scripts/` is run by Literate and turned into a page. Expensive results
 # are read from the cache in `docs/src/assets/data` (see `src/setup.jl`); set
