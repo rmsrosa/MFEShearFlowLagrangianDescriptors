@@ -15,3 +15,13 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [sources]
 LagrangianDescriptors = {rev = "main", url = "https://github.com/JuliaDynamics/LagrangianDescriptors.jl"}
+
+[compat]
+BifurcationKit = "0.9"
+CairoMakie = "0.15"
+Documenter = "1"
+ForwardDiff = "1"
+LagrangianDescriptors = "0.3"
+Literate = "2"
+OrdinaryDiffEq = "7"
+julia = "1.13"
