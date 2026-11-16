@@ -61,3 +61,14 @@ end
     end
     @test medians[2] > medians[1]                   # lifetimes grow with Re
 end
+
+@testset "edge tracking (Skufca, Yorke & Eckhardt 2006 method)" begin
+    p = MFEParams(; Re = 400.0, NBC_DOMAIN...)
+    lam, d = laminar_state(), njp_initial_condition(1.0)
+    @test edge_side(lam + 1e-3d, p) == :low
+    @test edge_side(lam + 0.5d, p) == :high
+    states, times = edge_track(lam + 1e-3d, lam + 0.5d, p; nsteps = 40, Δt = 25.0)
+    @test times[end] == 1000.0                      # tracking did not lose the edge
+    E = fluctuation_energy.(states[10:end])
+    @test all(1e-3 .< E .< 0.1)                     # stays between laminar and turbulence
+end

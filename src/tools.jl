@@ -146,49 +146,73 @@ function find_equilibrium(a0, p::MFEParams; maxiter = 100, tol = 1e-12)
 end
 
 """
-    edge_bisection(a_lam, a_turb, p; tmax = 2000.0, tol = 1e-8, kwargs...)
+    edge_side(a, p; Ehigh = 0.1, Elow = 1e-5, tmax = 5000.0)
 
-Bisect along the segment between a state `a_lam` that laminarises and a state `a_turb`
-that does not (within `tmax`). Returns the pair `(lo, hi)` of states, `|hi - lo| < tol`,
-straddling the edge of chaos (the laminar basin boundary).
+Classify `a` relative to the edge of chaos following Skufca, Yorke & Eckhardt
+(PRL 96, 174101, 2006): `:high` if the fluctuation energy (SIADS eq (4.1)) exceeds
+`Ehigh` (a large-amplitude excursion typical of turbulent transients) before it decays
+below `Elow`, `:low` if it decays first, `:undecided` if neither happens by `tmax`.
+The thresholds are our choice; edge states have fluctuation energies well between them.
 """
-function edge_bisection(a_lam, a_turb, p::MFEParams; tmax = 2000.0, tol = 1e-8, kwargs...)
-    decays(a) = lifetime(a, p; tmax, kwargs...) < tmax
-    lo, hi = collect(float.(a_lam)), collect(float.(a_turb))
-    @assert decays(lo) && !decays(hi) "endpoints must lie on opposite sides of the edge"
+function edge_side(a, p::MFEParams; Ehigh = 0.1, Elow = 1e-5, tmax = 5000.0, tol = 1e-11)
+    side = Ref(:undecided)
+    cb = DiscreteCallback((u, t, i) -> (E = fluctuation_energy(u); E > Ehigh || E < Elow),
+                          i -> (side[] = fluctuation_energy(i.u) > Ehigh ? :high : :low;
+                                terminate!(i)); save_positions = (false, false))
+    solve(ODEProblem(mfe!, collect(float.(a)), (0.0, tmax), p), Vern9(); callback = cb,
+          save_everystep = false, abstol = tol, reltol = tol)
+    return side[]
+end
+
+"""
+    edge_bisection(a_low, a_high, p; tol = 1e-10, kwargs...)
+
+Bisect the segment between a low-side and a high-side state (see [`edge_side`](@ref))
+until the bracket is shorter than `tol`. Returns `(lo, hi)`.
+"""
+function edge_bisection(a_low, a_high, p::MFEParams; tol = 1e-10, kwargs...)
+    lo, hi = collect(float.(a_low)), collect(float.(a_high))
+    edge_side(lo, p; kwargs...) == :low && edge_side(hi, p; kwargs...) == :high ||
+        error("endpoints must lie on the low and high side of the edge")
     while norm(hi - lo) > tol
         mid = (lo + hi) / 2
-        decays(mid) ? (lo = mid) : (hi = mid)
+        edge_side(mid, p; kwargs...) == :high ? (hi = mid) : (lo = mid)
     end
     return lo, hi
 end
 
 """
-    edge_track(a_lam, a_turb, p; nsteps = 50, Δt = 50.0, tmax = 2000.0, tol = 1e-8)
+    edge_track(a_low, a_high, p; nsteps = 200, Δt = 25.0, tol = 1e-10, kwargs...)
 
-Edge tracking (Skufca, Yorke & Eckhardt 2006): bisect, integrate the bracketing pair
-for `Δt`, re-bisect, repeat. Returns the visited edge states and their times.
+Edge tracking: bisect, evolve the bracketing pair for `Δt`, re-bisect (Skufca et al. 2006,
+Fig. 5). If the evolved pair has lost its bracket, the edge point is rescaled along the
+ray from the laminar state to find a new one. Returns `(states, times)` of the edge
+trajectory (midpoints of the brackets).
 """
-function edge_track(a_lam, a_turb, p::MFEParams; nsteps = 50, Δt = 50.0, tmax = 2000.0,
-                    tol = 1e-8, alg = Vern9())
-    lo, hi = edge_bisection(a_lam, a_turb, p; tmax, tol)
-    states, times = Vector{Float64}[], Float64[]
-    t = 0.0
-    for _ in 1:nsteps
-        sol = solve(ODEProblem(mfe!, hi, (0.0, Δt), p), alg; save_everystep = false,
-                    abstol = 1e-11, reltol = 1e-11)
-        sol2 = solve(ODEProblem(mfe!, lo, (0.0, Δt), p), alg; save_everystep = false,
-                     abstol = 1e-11, reltol = 1e-11)
-        t += Δt
-        lo2, hi2 = sol2.u[end], sol.u[end]
-        # re-bracket: if both drifted to the same side, fall back to the previous pair
-        lo, hi = try
-            edge_bisection(lo2, hi2, p; tmax, tol)
-        catch
-            break
+function edge_track(a_low, a_high, p::MFEParams; nsteps = 200, Δt = 25.0, tol = 1e-10,
+                    kwargs...)
+    lam = laminar_state()
+    lo, hi = edge_bisection(a_low, a_high, p; tol, kwargs...)
+    states, times = [(lo + hi) / 2], [0.0]
+    evolve(x) = solve(ODEProblem(mfe!, x, (0.0, Δt), p), Vern9(); save_everystep = false,
+                      abstol = 1e-12, reltol = 1e-12).u[end]
+    for k in 1:nsteps
+        lo, hi = evolve(lo), evolve(hi)
+        if !(edge_side(lo, p; kwargs...) == :low && edge_side(hi, p; kwargs...) == :high)
+            m = (lo + hi) / 2
+            found = false
+            for s in (1e-6, 1e-4, 1e-2, 0.1)
+                lo, hi = lam + (1 - s) * (m - lam), lam + (1 + s) * (m - lam)
+                if edge_side(lo, p; kwargs...) == :low && edge_side(hi, p; kwargs...) == :high
+                    found = true
+                    break
+                end
+            end
+            found || break
         end
+        lo, hi = edge_bisection(lo, hi, p; tol, kwargs...)
         push!(states, (lo + hi) / 2)
-        push!(times, t)
+        push!(times, k * Δt)
     end
     return states, times
 end
