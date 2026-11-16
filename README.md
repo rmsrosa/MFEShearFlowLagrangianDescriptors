@@ -1,5 +1,8 @@
 # MFE shear flow: bifurcations and Lagrangian descriptors
 
+[![docs](https://img.shields.io/badge/docs-dev-blue.svg)](https://rmsrosa.github.io/MFEShearFlowLagrangianDescriptors/dev/)
+[![Documentation](https://github.com/rmsrosa/MFEShearFlowLagrangianDescriptors/actions/workflows/docs.yml/badge.svg)](https://github.com/rmsrosa/MFEShearFlowLagrangianDescriptors/actions/workflows/docs.yml)
+
 A documentation-style repository (scripts and Documenter pages, **not** a Julia package)
 that uses the nine-mode Galerkin model of Moehlis, Faisst and Eckhardt (MFE) for sinusoidal
 shear flow as a worked example for
@@ -97,7 +100,9 @@ julia --project=. -t 4 docs/make.jl
 ```
 
 Literate runs each script (with the cache this takes about two minutes) and Documenter
-writes the site to `docs/build` (open `docs/build/index.html`).
+writes the site to `docs/build` (open `docs/build/index.html`). On every push to `main`,
+the workflow `.github/workflows/docs.yml` builds the site and deploys it to the `gh-pages`
+branch, published at https://rmsrosa.github.io/MFEShearFlowLagrangianDescriptors/dev/.
 
 ## Main results
 
