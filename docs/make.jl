@@ -1,4 +1,6 @@
 # Build the documentation: `julia --project=. -t 4 docs/make.jl` from the repository root.
+# On GitHub Actions (the `docs` job of `.github/workflows/CI.yml`) the site is also
+# deployed to gh-pages.
 #
 # Each script in `scripts/` is run by Literate and turned into a page. Expensive results
 # are read from the cache in `docs/src/assets/data` (see `src/setup.jl`); set
@@ -25,8 +27,10 @@ end
 makedocs(;
     sitename = "MFE shear flow: bifurcations and Lagrangian descriptors",
     root = @__DIR__,
-    format = Documenter.HTML(; prettyurls = false, size_threshold = 2^21),
-    remotes = nothing,
+    repo = Remotes.GitHub("rmsrosa", "MFEShearFlowLagrangianDescriptors"),
+    format = Documenter.HTML(; prettyurls = false, size_threshold = 2^21,
+        canonical = "https://rmsrosa.github.io/MFEShearFlowLagrangianDescriptors/dev/",
+        edit_link = "main", inventory_version = "dev"),
     pages = [
         "Home" => "index.md",
         "Model" => "generated/01_model.md",
@@ -35,4 +39,11 @@ makedocs(;
         "Bifurcations and edge state" => "generated/03_bifurcations.md",
         "Lagrangian descriptors" => "generated/04_lagrangian_descriptors.md",
     ],
+)
+
+# Deploys to the gh-pages branch when run on GitHub Actions (does nothing locally).
+deploydocs(;
+    repo = "github.com/rmsrosa/MFEShearFlowLagrangianDescriptors.git",
+    devbranch = "main",
+    push_preview = false,
 )

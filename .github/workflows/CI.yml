@@ -1,0 +1,46 @@
+name: CI
+on:
+  push:
+    branches: [main]
+    tags: ['*']
+  pull_request:
+  workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
+jobs:
+  test:
+    name: Tests (Julia 1.13)
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      # the committed Manifest.toml is resolved for Julia 1.13
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: '1.13'
+      - uses: julia-actions/cache@v2
+      - name: Install dependencies
+        run: julia --project=. -e 'using Pkg; Pkg.instantiate()'
+      - name: Run the tests
+        run: julia --project=. --threads=auto test/runtests.jl
+  docs:
+    name: Documentation
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    permissions:
+      contents: write      # deploydocs pushes to the gh-pages branch
+      statuses: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: '1.13'
+      - uses: julia-actions/cache@v2
+      - name: Install dependencies
+        run: julia --project=. -e 'using Pkg; Pkg.instantiate()'
+      # the scripts read cached results from docs/src/assets/data, so this takes minutes
+      - name: Build and deploy
+        run: julia --project=. --threads=auto docs/make.jl
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

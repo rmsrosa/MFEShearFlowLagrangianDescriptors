@@ -1,5 +1,10 @@
 # MFE shear flow: bifurcations and Lagrangian descriptors
 
+[![Docs](https://img.shields.io/badge/docs-dev-blue.svg)](https://rmsrosa.github.io/MFEShearFlowLagrangianDescriptors/dev/)
+[![CI](https://github.com/rmsrosa/MFEShearFlowLagrangianDescriptors/actions/workflows/CI.yml/badge.svg)](https://github.com/rmsrosa/MFEShearFlowLagrangianDescriptors/actions/workflows/CI.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+![GitHub repo size](https://img.shields.io/github/repo-size/rmsrosa/MFEShearFlowLagrangianDescriptors)
+
 A documentation-style repository (scripts and Documenter pages, **not** a Julia package)
 that uses the nine-mode Galerkin model of Moehlis, Faisst and Eckhardt (MFE) for sinusoidal
 shear flow as a worked example for
@@ -97,7 +102,9 @@ julia --project=. -t 4 docs/make.jl
 ```
 
 Literate runs each script (with the cache this takes about two minutes) and Documenter
-writes the site to `docs/build` (open `docs/build/index.html`).
+writes the site to `docs/build` (open `docs/build/index.html`). On every push to `main`,
+the `docs` job of `.github/workflows/CI.yml` builds the site and deploys it to the `gh-pages`
+branch, published at https://rmsrosa.github.io/MFEShearFlowLagrangianDescriptors/dev/.
 
 ## Main results
 
@@ -113,3 +120,7 @@ The edge state (found by edge tracking) lies close to the laminar state and is n
 the saddle-node equilibria. On slices through it, forward Lagrangian descriptors
 outline the laminar basin and its boundary, the stable manifold of the edge state, as
 confirmed by a direct classification of the same grid.
+
+## License
+
+MIT; see [LICENSE](LICENSE).
